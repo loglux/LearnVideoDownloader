@@ -7,7 +7,6 @@
 - Download videos in high, medium, or low quality.
 - Download audio files.
 - Download subtitles in specified languages.
-- Fetches video and subtitle URLs from the Microsoft Learn platform.
 
 ## Important
 
