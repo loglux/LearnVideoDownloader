@@ -70,7 +70,7 @@ class VideoDownloader:
                     else:
                         print("Видео высокого качества не найдено.")
 
-                if download_medium_quality:
+                if download_medium_quality or (download_high_quality and not video_url):
                     # Скачивание видео среднего качества
                     medium_quality_video_url = video_data['publicVideo']['mediumQualityVideoUrl']
                     if medium_quality_video_url:
