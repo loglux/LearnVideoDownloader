@@ -1,6 +1,6 @@
 # LearnVideoDownloader
 
-LearnVideoDownloader is a Python script designed to download videos and their subtitles from the Microsoft Learn platform. The script allows users to specify the quality of videos and the preferred languages for subtitles.
+*LearnVideoDownloader* is a Python script designed to download videos and their subtitles from the Microsoft Learn platform. The script allows users to specify the quality of videos and the preferred languages for subtitles.
 
 ## Features
 
@@ -51,7 +51,7 @@ if __name__ == "__main__":
         "https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-050-module-2/",
         # Add more URLs as needed
     ]
-    preferred_languages = ['en-us', 'es-es', 'fr-fr']  # Example preferred languages: English, Spanish, and French
+    preferred_languages = ['en-us', 'ru-ru']  # Example preferred languages: English and Russian subtitles
     for url in urls:
         downloader = VideoDownloader(url)
         downloader.run(download_high_quality=True,
