@@ -57,11 +57,13 @@ class VideoDownloader:
             print(f"Ошибка при скачивании файла: {e}")
 
     def run(self, download_high_quality=True, download_medium_quality=False, download_low_quality=False,
-            download_audio=True, download_captions=True):
+            download_audio=True, download_captions=True, preferred_languages=None):
         entry_id, title = self.fetch_entry_id_and_title()
         if entry_id:
             video_data = self.fetch_video_data(entry_id)
             if video_data:
+                video_url = None
+
                 if download_high_quality:
                     # Скачивание видео с аудио высокого качества
                     video_url = video_data['publicVideo']['highQualityVideoUrl']
@@ -71,7 +73,7 @@ class VideoDownloader:
                         print("Видео высокого качества не найдено.")
 
                 if download_medium_quality or (download_high_quality and not video_url):
-                    # Скачивание видео среднего качества
+                    # Скачивание видео среднего качества, если видео высокого качества не найдено
                     medium_quality_video_url = video_data['publicVideo']['mediumQualityVideoUrl']
                     if medium_quality_video_url:
                         self.download_file(medium_quality_video_url, f'videos/{title}_medium_quality.mp4')
@@ -98,9 +100,12 @@ class VideoDownloader:
                     # Скачивание субтитров
                     captions = video_data['publicVideo'].get('captions', [])
                     for caption in captions:
-                        caption_url = caption['url']
                         language = caption['language']
-                        self.download_file(caption_url, f'subtitles/{title}_{language}.vtt')
+                        if preferred_languages is None or language in preferred_languages:
+                            caption_url = caption['url']
+                            self.download_file(caption_url, f'subtitles/{title}_{language}.vtt')
+                        else:
+                            print(f"Субтитры на языке {language} не включены в предпочтительные.")
             else:
                 print("Не удалось получить данные видео.")
         else:
@@ -128,10 +133,12 @@ if __name__ == "__main__":
 #        "https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-050-module-16/"
         "https://learn.microsoft.com/en-us/shows/AI-Show/Bring-Anomaly-Detector-on-premise-with-containers-support"
     ]
+    preferred_languages = ['en-us', 'ru-ru']  # Пример предпочитаемых языков: английский и русский
     for url in urls:
         downloader = VideoDownloader(url)
         downloader.run(download_high_quality=True,
                        download_medium_quality=False,
                        download_low_quality=False,
                        download_audio=True,
-                       download_captions=True)
+                       download_captions=True,
+                       preferred_languages=preferred_languages)
