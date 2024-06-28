@@ -70,7 +70,7 @@ class VideoDownloader:
                 video_url = None
 
                 if download_high_quality:
-                    # Скачивание видео с аудио высокого качества
+                    # Скачивание видео высокого качества
                     video_url = video_data['publicVideo']['highQualityVideoUrl']
                     if video_url:
                         self.download_file(video_url,
@@ -79,7 +79,7 @@ class VideoDownloader:
                         print("Видео высокого качества не найдено.")
 
                 if download_medium_quality or (download_high_quality and not video_url):
-                    # Скачивание видео среднего качества, если видео высокого качества не найдено
+                    # Скачивание видео среднего качества, если опция вклчена или если видео высокого качества не найдено
                     medium_quality_video_url = video_data['publicVideo']['mediumQualityVideoUrl']
                     if medium_quality_video_url:
                         self.download_file(medium_quality_video_url,
@@ -132,7 +132,7 @@ if __name__ == "__main__":
 #        "https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-050-module-6/",
 #        "https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-050-module-7/",
 #        "https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-050-module-8/",
-#        "https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-050-module-9/",
+        "https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-050-module-9/",
 #        "https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-050-module-10/",
 #        "https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-050-module-11/",
 #        "https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-050-module-12/",

@@ -9,6 +9,10 @@
 - Download subtitles in specified languages.
 - Fetches video and subtitle URLs from the Microsoft Learn platform.
 
+## Important
+
+- Downloads videos and audio files in their original quality without re-encoding.
+
 ## Requirements
 
 - Python 3.x
