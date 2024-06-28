@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import os
 import re
+from urllib.parse import urlparse
 
 
 class VideoDownloader:
@@ -56,6 +57,10 @@ class VideoDownloader:
         except requests.exceptions.RequestException as e:
             print(f"Ошибка при скачивании файла: {e}")
 
+    def get_file_extension(self, url):
+        path = urlparse(url).path
+        return os.path.splitext(path)[1]
+
     def run(self, download_high_quality=True, download_medium_quality=False, download_low_quality=False,
             download_audio=True, download_captions=True, preferred_languages=None):
         entry_id, title = self.fetch_entry_id_and_title()
@@ -68,7 +73,8 @@ class VideoDownloader:
                     # Скачивание видео с аудио высокого качества
                     video_url = video_data['publicVideo']['highQualityVideoUrl']
                     if video_url:
-                        self.download_file(video_url, f'videos/{title}_high_quality.mp4')
+                        self.download_file(video_url,
+                                           f'videos/{title}_high_quality{self.get_file_extension(video_url)}')
                     else:
                         print("Видео высокого качества не найдено.")
 
@@ -76,7 +82,8 @@ class VideoDownloader:
                     # Скачивание видео среднего качества, если видео высокого качества не найдено
                     medium_quality_video_url = video_data['publicVideo']['mediumQualityVideoUrl']
                     if medium_quality_video_url:
-                        self.download_file(medium_quality_video_url, f'videos/{title}_medium_quality.mp4')
+                        self.download_file(medium_quality_video_url,
+                                           f'videos/{title}_medium_quality{self.get_file_extension(medium_quality_video_url)}')
                     else:
                         print("Видео среднего качества не найдено.")
 
@@ -84,7 +91,8 @@ class VideoDownloader:
                     # Скачивание видео низкого качества
                     low_quality_video_url = video_data['publicVideo']['lowQualityVideoUrl']
                     if low_quality_video_url:
-                        self.download_file(low_quality_video_url, f'videos/{title}_low_quality.mp4')
+                        self.download_file(low_quality_video_url,
+                                           f'videos/{title}_low_quality{self.get_file_extension(low_quality_video_url)}')
                     else:
                         print("Видео низкого качества не найдено.")
 
@@ -92,7 +100,7 @@ class VideoDownloader:
                     # Скачивание аудио
                     audio_url = video_data['publicVideo']['audioUrl']
                     if audio_url:
-                        self.download_file(audio_url, f'audios/{title}_audio.mp4')
+                        self.download_file(audio_url, f'audios/{title}_audio{self.get_file_extension(audio_url)}')
                     else:
                         print("Аудио не найдено.")
 
@@ -103,7 +111,8 @@ class VideoDownloader:
                         language = caption['language']
                         if preferred_languages is None or language in preferred_languages:
                             caption_url = caption['url']
-                            self.download_file(caption_url, f'subtitles/{title}_{language}.vtt')
+                            self.download_file(caption_url,
+                                               f'subtitles/{title}_{language}{self.get_file_extension(caption_url)}')
                         else:
                             print(f"Субтитры на языке {language} не включены в предпочтительные.")
             else:
