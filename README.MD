@@ -20,7 +20,7 @@
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/VideoSubtitleDownloader.git
+git clone https://github.com/yourusername/LearnVideoDownloader.git
 ```
 
 Navigate to the project directory:
