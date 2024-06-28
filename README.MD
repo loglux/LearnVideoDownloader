@@ -1,6 +1,6 @@
 # LearnVideoDownloader
 
-*LearnVideoDownloader* is a Python script designed to download videos and their subtitles from the Microsoft Learn platform. The script allows users to specify the quality of videos and the preferred languages for subtitles.
+*LearnVideoDownloader* is a Python script designed to download videos, audios and subtitles from the Microsoft Learn platform. The script allows users to specify the quality of videos and the preferred languages for subtitles.
 
 ## Features
 
