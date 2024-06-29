@@ -91,7 +91,7 @@ In addition to the existing functionality, the script allows you to fetch and do
 1. Save your list of links in a file (for example, `links.txt`).
 2. Run the script, specifying the file path that contains the links:
 ```bash
-python fetch_all_links.py links.txt --languages en-us ru-ru
+python fetch_from_file.py links.txt --languages en-us ru-ru
 ```
 In this command, --languages is an optional argument to specify the preferred languages for subtitles.
 This script should correctly process each link from your file and perform the necessary operations with each of them, including downloading videos and subtitles.
