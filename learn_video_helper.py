@@ -26,7 +26,7 @@ class VideoDownloader:
         # Извлечение заголовка
         title_meta = soup.find('meta', {'property': 'og:title'})
         title = title_meta.get('content') if title_meta else 'video'
-        title = re.sub(r'[\\/*?:"<>|]', "", title)  # Удаление недопустимых символов для имени файла
+        title = re.sub(r'[\\/*?:"<>|]', "", title)  # Удаление недопустимых для имени файла символов
 
         if entry_id:
             print(f"Найден entryId: {entry_id}")
