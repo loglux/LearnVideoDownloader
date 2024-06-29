@@ -64,5 +64,24 @@ if __name__ == "__main__":
                        download_captions=True,
                        preferred_languages=preferred_languages)
 ```
+
+## Fetch All Links in a Video Series
+The LearnVideoFetcher script extends the functionality of the main project by dynamically generating URLs for a series of videos based on a specified base URL and number of modules.
+### Usage
+To fetch all links in a video series, follow these steps:
+Run the Script:
+css
+```bash
+python fetch_all_links.py [base_url] [num_modules]
+```
+Replace [base_url] with the base URL for the series and [num_modules] with the total number of modules in the series.
+
+### Example
+Suppose you have a series with a base URL https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-900-module-1 and there are 7 modules in the series. You can generate URLs dynamically by removing the module number:
+```bash
+python fetch_all_links.py https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-900-module- 7
+```
+This script will automatically generate URLs for modules 1 through 7 and download their associated content.
+
 ## License
 This project is licensed under the MIT License.
