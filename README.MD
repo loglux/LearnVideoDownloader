@@ -36,7 +36,7 @@ Install the required libraries:
 ```bash
 pip install requests beautifulsoup4
 ```
-## Usage
+### Usage:
 Edit the urls list in the script to include the URLs of the Microsoft Learn videos you want to download.
 
 Set your preferred languages for subtitles by modifying the preferred_languages list.
@@ -45,7 +45,7 @@ Run the script:
 ``` bash
 python learn_video_helper.py
 ```
-Example
+### Example:
 ```python
 
 if __name__ == "__main__":
@@ -67,7 +67,7 @@ if __name__ == "__main__":
 
 ## Fetch All Links in a Video Series
 The LearnVideoFetcher script extends the functionality of the main project by dynamically generating URLs for a series of videos based on a specified base URL and number of modules.
-### Usage
+### Usage:
 To fetch all links in a video series, follow these steps:
 Run the Script:
 ```bash
@@ -75,7 +75,7 @@ python fetch_all_links.py [base_url] [num_modules]
 ```
 Replace [base_url] with any URL from the series and [num_modules] with the total number of modules in the series.
 
-### Example
+### Example:
 
 Suppose you have a series with a URL like "https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-900-module-3" and there are 7 modules in the series. You can generate URLs dynamically by passing the URL as it is:
 ```bash
