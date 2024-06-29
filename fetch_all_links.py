@@ -1,8 +1,18 @@
 import argparse
+import re
 from learn_video_helper import VideoDownloader
 
+
 def generate_urls(base_url, num_links):
-    urls = [f"{base_url}{i}" for i in range(1, num_links + 1)]
+    urls = []
+    match = re.search(r'(\d+)([a-zA-Z]*)$', base_url)
+    if match:
+        numeric_part = 1  # starting from 1
+        alphabetic_part = match.group(2)
+        prefix = base_url[:-len(match.group(0))]
+
+        for i in range(num_links):
+            urls.append(f"{prefix}{numeric_part + i}{alphabetic_part}")
     return urls
 
 if __name__ == "__main__":
@@ -18,6 +28,7 @@ if __name__ == "__main__":
     preferred_languages = ['en-us', 'ru-ru']
 
     for url in urls:
+        print(url)
         downloader = VideoDownloader(url)
         downloader.run(
             download_high_quality=True,
