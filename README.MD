@@ -77,7 +77,7 @@ Replace [base_url] with any URL from the series and [num_modules] with the total
 
 ### Example
 
-Suppose you have a series with a URL like "https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-900-module-3b" and there are 7 modules in the series. You can generate URLs dynamically by passing the URL as it is:
+Suppose you have a series with a URL like "https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-900-module-3" and there are 7 modules in the series. You can generate URLs dynamically by passing the URL as it is:
 ```bash
 python fetch_all_links.py https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-900-module-3 7
 ```
