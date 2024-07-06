@@ -27,6 +27,7 @@ class VideoDownloader:
         title_meta = soup.find('meta', {'property': 'og:title'})
         title = title_meta.get('content') if title_meta else 'video'
         title = re.sub(r'[\\/*?:"<>|]', "", title)  # Удаление недопустимых для имени файла символов
+        title = re.sub(r'\s+', " ", title) # Замена табуляции и нескольких пробелов одним пробелом
 
         if entry_id:
             print(f"Найден entryId: {entry_id}")
@@ -132,7 +133,7 @@ if __name__ == "__main__":
 #        "https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-050-module-6/",
 #        "https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-050-module-7/",
 #        "https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-050-module-8/",
-        "https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-050-module-9/",
+#        "https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-050-module-9/",
 #        "https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-050-module-10/",
 #        "https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-050-module-11/",
 #        "https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-050-module-12/",
@@ -140,7 +141,8 @@ if __name__ == "__main__":
 #        "https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-050-module-14/",
 #        "https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-050-module-15/",
 #        "https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-050-module-16/"
-        "https://learn.microsoft.com/en-us/shows/AI-Show/Bring-Anomaly-Detector-on-premise-with-containers-support"
+#        "https://learn.microsoft.com/en-us/shows/AI-Show/Bring-Anomaly-Detector-on-premise-with-containers-support"
+        "https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/dp-600-module-19"
     ]
     preferred_languages = ['en-us', 'ru-ru']  # Пример предпочитаемых языков: английский и русский
     for url in urls:
