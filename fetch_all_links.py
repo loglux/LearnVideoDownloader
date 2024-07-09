@@ -21,7 +21,7 @@ if __name__ == "__main__":
     parser.add_argument('num_links', type=int, help='Number of links to generate')
     args = parser.parse_args()
 
-    base_url = args.base_url
+    base_url = args.base_url.rstrip('/') # remove trailing slash
     num_links = args.num_links
 
     urls = generate_urls(base_url, num_links)
