@@ -34,7 +34,7 @@ cd LearnVideoDownloader
 
 Install the required libraries:
 ```bash
-pip install requests beautifulsoup4
+pip install requests beautifulsoup4 tqdm
 ```
 ### Usage:
 Edit the urls list in the script to include the URLs of the Microsoft Learn videos you want to download.

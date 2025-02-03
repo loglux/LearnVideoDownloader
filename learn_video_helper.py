@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import os
 import re
 from urllib.parse import urlparse
+from tqdm import tqdm
 
 
 class VideoDownloader:
@@ -51,9 +52,18 @@ class VideoDownloader:
             response = requests.get(file_url, stream=True)
             response.raise_for_status()  # Проверка на наличие ошибок HTTP
             os.makedirs(os.path.dirname(output_path), exist_ok=True)
-            with open(output_path, 'wb') as f:
-                for chunk in response.iter_content(chunk_size=8192):
-                    f.write(chunk)
+
+            total_size = int(response.headers.get('content-length', 0))
+            chunk_size = 8192
+
+            with open(output_path, 'wb') as f, tqdm(
+                    total=total_size, unit='B', unit_scale=True, desc="Скачивание"
+            ) as progress_bar:
+                for chunk in response.iter_content(chunk_size=chunk_size):
+                    if chunk:
+                        f.write(chunk)
+                        progress_bar.update(len(chunk))
+
             print(f"✅ Файл {output_path} успешно скачан!")
         except requests.exceptions.RequestException as e:
             print(f"❌ Ошибка при скачивании файла: {e}")
@@ -126,9 +136,9 @@ if __name__ == "__main__":
     #url = "https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-102-module-11"
     urls = [
         "https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-050-module-1/",
-#        "https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-050-module-2/",
-#        "https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-050-module-3/",
-#        "https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-050-module-4/",
+        "https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-050-module-2/",
+        "https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-050-module-3/",
+        "https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-050-module-4/",
 #        "https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-050-module-5/",
 #        "https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-050-module-6/",
 #        "https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-050-module-7/",
