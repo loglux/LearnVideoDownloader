@@ -4,36 +4,34 @@ import os
 import re
 from urllib.parse import urlparse
 from tqdm import tqdm
-
+from config import VIDEOS_DIR, AUDIOS_DIR, SUBTITLES_DIR
 
 class VideoDownloader:
     def __init__(self, url):
         self.url = url
 
     def fetch_entry_id_and_title(self):
-        print("🌍 Отправка запроса на URL... 🔄")
+        print("🌍 Requesting URL... 🔄")
         response = requests.get(self.url)
         if response.status_code != 200:
-            print(f"❌ Ошибка при загрузке страницы: {response.status_code}")
+            print(f"❌ Failed to load page: {response.status_code}")
             return None, None
 
-        print("🧐 Парсинг HTML страницы... 📄")
+        print("🧐 Parsing HTML content... 📄")
         soup = BeautifulSoup(response.text, 'html.parser')
 
-        # Извлечение entryId
         entry_id_meta = soup.find('meta', {'name': 'entryId'})
         entry_id = entry_id_meta.get('content') if entry_id_meta else None
 
-        # Извлечение заголовка
         title_meta = soup.find('meta', {'property': 'og:title'})
         title = title_meta.get('content') if title_meta else 'video'
-        title = re.sub(r'[\\/*?:"<>|]', "", title)  # Удаление недопустимых для имени файла символов
-        title = re.sub(r'\s+', " ", title) # Замена табуляции и нескольких пробелов одним пробелом
+        title = re.sub(r'[\\/*?:"<>|]', "", title)
+        title = re.sub(r'\s+', " ", title)
 
         if entry_id:
-            print(f"🔍 Найден entryId: {entry_id}")
+            print(f"🔍 Found entryId: {entry_id}")
         else:
-            print("❌ Не удалось найти entryId.")
+            print("❌ entryId not found.")
 
         return entry_id, title
 
@@ -43,30 +41,48 @@ class VideoDownloader:
         if response.status_code == 200:
             return response.json()
         else:
-            print(f"⚠️ Ошибка при получении данных: {response.status_code}")
+            print(f"⚠️ Failed to fetch video data: {response.status_code}")
             return None
 
-    def download_file(self, file_url, output_path):
-        print(f"📥 Скачивание файла из {file_url}...")
+    def download_file(self, file_url, output_path, progress_callback=None):
+        print(f"📥 Downloading file from {file_url}...")
         try:
             response = requests.get(file_url, stream=True)
-            response.raise_for_status()  # Проверка на наличие ошибок HTTP
+            response.raise_for_status()
             os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
             total_size = int(response.headers.get('content-length', 0))
             chunk_size = 8192
+            downloaded = 0
 
-            with open(output_path, 'wb') as f, tqdm(
-                    total=total_size, unit='B', unit_scale=True, desc="Скачивание"
-            ) as progress_bar:
-                for chunk in response.iter_content(chunk_size=chunk_size):
-                    if chunk:
-                        f.write(chunk)
-                        progress_bar.update(len(chunk))
+            if progress_callback is None:
+                with open(output_path, 'wb') as f, tqdm(
+                    total=total_size, unit='B', unit_scale=True, desc="Downloading"
+                ) as progress_bar:
+                    for chunk in response.iter_content(chunk_size=chunk_size):
+                        if chunk:
+                            f.write(chunk)
+                            progress_bar.update(len(chunk))
+            else:
+                with open(output_path, 'wb') as f:
+                    for chunk in response.iter_content(chunk_size=chunk_size):
+                        if chunk:
+                            f.write(chunk)
+                            downloaded += len(chunk)
+                            percent = downloaded / total_size * 100 if total_size else 0
+                            progress_callback(f"{os.path.basename(output_path)} — {percent:.1f}%")
 
-            print(f"✅ Файл {output_path} успешно скачан!")
+            msg = f"✅ Finished: {output_path}"
+            if progress_callback:
+                progress_callback(msg)
+            else:
+                print(msg)
         except requests.exceptions.RequestException as e:
-            print(f"❌ Ошибка при скачивании файла: {e}")
+            msg = f"❌ Error downloading file: {e}"
+            if progress_callback:
+                progress_callback(msg)
+            else:
+                print(msg)
 
     def get_file_extension(self, url):
         path = urlparse(url).path
@@ -74,92 +90,103 @@ class VideoDownloader:
 
     def run(self, download_high_quality=True, download_medium_quality=False, download_low_quality=False,
             download_audio=True, download_captions=True, preferred_languages=None):
-        entry_id, title = self.fetch_entry_id_and_title()
-        if entry_id:
-            video_data = self.fetch_video_data(entry_id)
-            if video_data:
-                video_url = None
+        self._run_internal(
+            download_high_quality,
+            download_medium_quality,
+            download_low_quality,
+            download_audio,
+            download_captions,
+            preferred_languages,
+            progress_callback=None
+        )
 
-                if download_high_quality:
-                    # Скачивание видео высокого качества
-                    video_url = video_data['publicVideo']['highQualityVideoUrl']
-                    if video_url:
-                        self.download_file(video_url,
-                                           f'videos/{title}_high_quality{self.get_file_extension(video_url)}')
-                    else:
-                        print("⚠️ Видео высокого качества не найдено.")
+    def run_with_callback(self, download_high_quality=True, download_medium_quality=False, download_low_quality=False,
+                          download_audio=True, download_captions=True, preferred_languages=None,
+                          progress_callback=None):
+        self._run_internal(
+            download_high_quality,
+            download_medium_quality,
+            download_low_quality,
+            download_audio,
+            download_captions,
+            preferred_languages,
+            progress_callback
+        )
 
-                if download_medium_quality or (download_high_quality and not video_url):
-                    # Скачивание видео среднего качества, если эта опция включена или если видео высокого качества не найдено
-                    medium_quality_video_url = video_data['publicVideo']['mediumQualityVideoUrl']
-                    if medium_quality_video_url:
-                        self.download_file(medium_quality_video_url,
-                                           f'videos/{title}_medium_quality{self.get_file_extension(medium_quality_video_url)}')
-                    else:
-                        print("⚠️ Видео среднего качества не найдено.")
-
-                if download_low_quality:
-                    # Скачивание видео низкого качества
-                    low_quality_video_url = video_data['publicVideo']['lowQualityVideoUrl']
-                    if low_quality_video_url:
-                        self.download_file(low_quality_video_url,
-                                           f'videos/{title}_low_quality{self.get_file_extension(low_quality_video_url)}')
-                    else:
-                        print("⚠️ Видео низкого качества не найдено.")
-
-                if download_audio:
-                    # Скачивание аудио
-                    audio_url = video_data['publicVideo']['audioUrl']
-                    if audio_url:
-                        self.download_file(audio_url, f'audios/{title}_audio{self.get_file_extension(audio_url)}')
-                    else:
-                        print("🔇 Аудио не найдено.")
-
-                if download_captions:
-                    # Скачивание субтитров
-                    captions = video_data['publicVideo'].get('captions', [])
-                    for caption in captions:
-                        language = caption['language']
-                        if preferred_languages is None or language in preferred_languages:
-                            caption_url = caption['url']
-                            self.download_file(caption_url,
-                                               f'subtitles/{title}_{language}{self.get_file_extension(caption_url)}')
-                        else:
-                            print(f"⚠️ Субтитры на языке {language} не включены в предпочтительные.")
+    def _run_internal(self, download_high_quality, download_medium_quality, download_low_quality,
+                      download_audio, download_captions, preferred_languages, progress_callback):
+        def log(msg):
+            if progress_callback:
+                progress_callback(msg)
             else:
-                print("❌ Не удалось получить данные видео.")
-        else:
-            print("❌ Не удалось найти URL для JSON API.")
+                print(msg)
+
+        entry_id, title = self.fetch_entry_id_and_title()
+        if not entry_id:
+            log("❌ Could not find entryId.")
+            return
+
+        video_data = self.fetch_video_data(entry_id)
+        if not video_data:
+            log("❌ Failed to fetch video data.")
+            return
+
+        # High quality video
+        if download_high_quality:
+            url = video_data['publicVideo'].get('highQualityVideoUrl')
+            if url:
+                self.download_file(url, os.path.join(VIDEOS_DIR, f'{title}_high_quality{self.get_file_extension(url)}'), progress_callback)
+            else:
+                log("⚠️ High quality video not found.")
+
+        # Medium quality video (fallback)
+        if download_medium_quality:
+            url = video_data['publicVideo'].get('mediumQualityVideoUrl')
+            if url:
+                self.download_file(url, os.path.join(VIDEOS_DIR, f'{title}_medium_quality{self.get_file_extension(url)}'), progress_callback)
+            else:
+                log("⚠️ Medium quality video not found.")
+
+        # Low quality video
+        if download_low_quality:
+            url = video_data['publicVideo'].get('lowQualityVideoUrl')
+            if url:
+                self.download_file(url, os.path.join(VIDEOS_DIR, f'{title}_low_quality{self.get_file_extension(url)}'), progress_callback)
+            else:
+                log("⚠️ Low quality video not found.")
+
+        # Audio
+        if download_audio:
+            url = video_data['publicVideo'].get('audioUrl')
+            if url:
+                self.download_file(url, os.path.join(AUDIOS_DIR, f'{title}_audio{self.get_file_extension(url)}'), progress_callback)
+            else:
+                log("🔇 Audio not found.")
+
+        # Captions
+        if download_captions:
+            captions = video_data['publicVideo'].get('captions', [])
+            for caption in captions:
+                language = caption['language']
+                if preferred_languages is None or language in preferred_languages:
+                    url = caption['url']
+                    self.download_file(url, os.path.join(SUBTITLES_DIR, f'{title}_{language}{self.get_file_extension(url)}'), progress_callback)
+                else:
+                    log(f"⚠️ Skipping subtitle in {language}")
 
 
 if __name__ == "__main__":
-    #url = "https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-102-module-11"
     urls = [
-        "https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-050-module-1/",
-        "https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-050-module-2/",
-        "https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-050-module-3/",
         "https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-050-module-4/",
-#        "https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-050-module-5/",
-#        "https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-050-module-6/",
-#        "https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-050-module-7/",
-#        "https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-050-module-8/",
-#        "https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-050-module-9/",
-#        "https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-050-module-10/",
-#        "https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-050-module-11/",
-#        "https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-050-module-12/",
-#        "https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-050-module-13/",
-#        "https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-050-module-14/",
-#        "https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-050-module-15/",
-#        "https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-050-module-16/"
-#        "https://learn.microsoft.com/en-us/shows/AI-Show/Bring-Anomaly-Detector-on-premise-with-containers-support"
-        #"https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/dp-600-module-19"
     ]
-    preferred_languages = ['en-us', 'ru-ru']  # Пример предпочитаемых языков: английский и русский
+    preferred_languages = ['en-us', 'ru-ru']
     for url in urls:
         downloader = VideoDownloader(url)
-        downloader.run(download_high_quality=True,
-                       download_medium_quality=False,
-                       download_low_quality=False,
-                       download_audio=True,
-                       download_captions=True,
-                       preferred_languages=preferred_languages)
+        downloader.run(
+            download_high_quality=True,
+            download_medium_quality=False,
+            download_low_quality=False,
+            download_audio=True,
+            download_captions=True,
+            preferred_languages=preferred_languages
+        )

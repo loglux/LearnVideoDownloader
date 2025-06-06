@@ -2,21 +2,32 @@
 
 *LearnVideoDownloader* is a Python script designed to download videos, audios and subtitles from the Microsoft Learn platform. The script allows users to specify the quality of videos and the preferred languages for subtitles.
 
+![GUI Interface](screenshots/img.png)
+
 ## Features
 
-- Download videos in high, medium, or low quality.
-- Download audio files.
-- Download subtitles in specified languages.
+- Download videos in high, medium, or low quality
+- Download audio files
+- Download subtitles in specified languages
+- Configurable download directory through environment variables
+- User-friendly GUI interface with:
+  - Manual URL list input
+  - Smart URL sequence generation from two sample URLs
+  - File upload for batch processing
+- Command-line interface for automation
 
 ## Important
 
-- Downloads videos and audio files in their original quality without re-encoding.
+- Downloads videos and audio files in their original quality without re-encoding
+- By default, files are saved in the `downloads` directory within the project folder
 
 ## Requirements
 
 - Python 3.x
 - Requests library
 - BeautifulSoup library
+- python-dotenv library
+- Gradio library (for GUI)
 
 ## Installation
 
@@ -26,43 +37,75 @@
 git clone https://github.com/loglux/LearnVideoDownloader.git
 ```
 
-Navigate to the project directory:
+2. Navigate to the project directory:
 
 ```bash
 cd LearnVideoDownloader
 ```
 
-Install the required libraries:
+3. Install the required libraries:
 ```bash
-pip install requests beautifulsoup4 tqdm
+pip install requests beautifulsoup4 tqdm python-dotenv gradio
 ```
-### Usage:
-Edit the urls list in the script to include the URLs of the Microsoft Learn videos you want to download.
 
-Set your preferred languages for subtitles by modifying the preferred_languages list.
+## Configuration
 
-Run the script:
-``` bash
-python learn_video_helper.py
+You can configure the download directory by setting the `DOWNLOAD_DIR` environment variable. There are two ways to do this:
+
+1. Create a `.env` file in the project root and add:
 ```
-### Example:
+DOWNLOAD_DIR=/path/to/your/download/directory
+```
+
+2. Or set the environment variable directly in your shell:
+```bash
+# Linux/Mac
+export DOWNLOAD_DIR=/path/to/your/download/directory
+
+# Windows
+set DOWNLOAD_DIR=C:\path\to\your\download\directory
+```
+
+If no download directory is specified, files will be saved in the `downloads` directory within the project folder.
+
+## Usage
+
+### GUI Interface
+
+To start the graphical interface:
+```bash
+python gradio_ui.py
+```
+
+The GUI provides three ways to download content:
+1. **Manual URL List**: Enter multiple URLs (one per line)
+2. **Generate from Base URL**: Enter two sample URLs (e.g., module-4 and module-5) and the tool will generate a sequence starting from module-1
+3. **Upload File**: Upload a text file containing URLs (one per line)
+
+### Command Line Interface
+
+For automation or scripting, you can still use the command-line interface:
+
 ```python
+from learn_video_helper import VideoDownloader
 
-if __name__ == "__main__":
-    urls = [
-        "https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-050-module-1/",
-        "https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-050-module-2/",
-        # Add more URLs as needed
-    ]
-    preferred_languages = ['en-us', 'ru-ru']  # Example preferred languages: English and Russian subtitles
-    for url in urls:
-        downloader = VideoDownloader(url)
-        downloader.run(download_high_quality=True,
-                       download_medium_quality=False,
-                       download_low_quality=False,
-                       download_audio=True,
-                       download_captions=True,
-                       preferred_languages=preferred_languages)
+urls = [
+    "https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-050-module-1/",
+    "https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-050-module-2/",
+    # Add more URLs as needed
+]
+preferred_languages = ['en-us', 'ru-ru']  # Example preferred languages: English and Russian subtitles
+
+for url in urls:
+    downloader = VideoDownloader(url)
+    downloader.run(
+        download_high_quality=True,
+        download_medium_quality=False,
+        download_low_quality=False,
+        download_audio=True,
+        download_captions=True,
+        preferred_languages=preferred_languages
+    )
 ```
 
 ## Fetch All Links in a Video Series
