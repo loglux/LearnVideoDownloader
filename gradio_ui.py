@@ -8,6 +8,21 @@ import io
 import sys
 from tqdm import tqdm  # keep tqdm for CLI
 
+choices = [
+    "en-us",
+    "ru-ru",
+    "zh-cn",
+    "zh-tw",
+    "ko-kr",
+    "it-it",
+    "pt-pt",
+    "ja-jp",
+    "pl-pl",
+    "de-de",
+    "cs-cz",
+    "es-es",
+    "fr-fr"
+]
 
 def process_manual_urls_stream(urls_text, languages):
     urls = [url.strip() for url in urls_text.strip().splitlines() if url.strip()]
@@ -123,24 +138,10 @@ Choose a method to download videos, audio, and subtitles.""")
     with gr.Tab("Manual URL List"):
         urls_input = gr.Textbox(label="Enter URLs (one per line)", lines=5,
                                 placeholder="https://learn.microsoft.com/...\nhttps://learn.microsoft.com/...")
-        langs_input1 = gr.CheckboxGroup(label="Preferred Subtitle Languages", choices = [
-    "en-us",
-    "ru-ru",
-    "zh-cn",
-    "zh-tw",
-    "ko-kr",
-    "it-it",
-    "pt-pt",
-    "ja-jp",
-    "pl-pl",
-    "de-de",
-    "cs-cz",
-    "es-es",
-    "fr-fr"
-]
+        langs_input1 = gr.CheckboxGroup(label="Preferred Subtitle Languages", choices = choices
 ,
                                         value=["en-us"])
-        log_output1 = gr.Textbox(label="Logs", lines=20)
+        log_output1 = gr.Textbox(label="Logs", lines=1)
         progress1 = gr.Slider(minimum=0, maximum=100, label="Overall Progress")
         btn1 = gr.Button("Download")
         btn1.click(fn=process_manual_urls_stream, inputs=[urls_input, langs_input1], outputs=[log_output1, progress1])
@@ -163,9 +164,9 @@ For example, if you enter module-4 and module-5 and request 3 URLs, you'll get:
         sample_url2_input = gr.Textbox(label="Second Sample URL",
                                        placeholder="https://learn.microsoft.com/.../module-5")
         count_input = gr.Number(label="Number of URLs to Generate (starting from 1)", precision=0, value=5)
-        langs_input2 = gr.CheckboxGroup(label="Preferred Subtitle Languages", choices=["en-us", "ru-ru"],
+        langs_input2 = gr.CheckboxGroup(label="Preferred Subtitle Languages", choices=choices,
                                         value=["en-us"])
-        log_output2 = gr.Textbox(label="Logs", lines=20)
+        log_output2 = gr.Textbox(label="Logs", lines=1)
         progress2 = gr.Slider(minimum=0, maximum=100, label="Overall Progress")
         btn2 = gr.Button("Generate and Download")
         btn2.click(fn=process_generated_urls_stream,
@@ -174,9 +175,9 @@ For example, if you enter module-4 and module-5 and request 3 URLs, you'll get:
 
     with gr.Tab("Upload File"):
         file_input = gr.File(label="Upload .txt file with URLs")
-        langs_input3 = gr.CheckboxGroup(label="Preferred Subtitle Languages", choices=["en-us", "ru-ru"],
+        langs_input3 = gr.CheckboxGroup(label="Preferred Subtitle Languages", choices=choices,
                                         value=["en-us"])
-        log_output3 = gr.Textbox(label="Logs", lines=20)
+        log_output3 = gr.Textbox(label="Logs", lines=1)
         progress3 = gr.Slider(minimum=0, maximum=100, label="Overall Progress")
         btn3 = gr.Button("Download from File")
         btn3.click(fn=process_from_file_stream, inputs=[file_input, langs_input3], outputs=[log_output3, progress3])
