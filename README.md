@@ -47,6 +47,45 @@ You can choose any combination (e.g., only audio + subtitles, or only video, etc
 - Downloads videos and audio files in their original quality without re-encoding
 - By default, files are saved in the `downloads` directory within the project folder
 ---
+### 🔗 Smart URL Sequence Generation
+
+Some Microsoft Learn course URLs use numbers with leading zeros (e.g. `ai-900-01-fy25`), while others use plain numbers (e.g. `module-19`).  
+Our Smart URL Generator works with **any two sample URLs** from the same video series.
+
+#### **How to use:**
+1. Copy any two links from the course sequence — for example:
+   - `https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-900-02-fy25`
+   - `https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/ai-900-04-fy25`
+   - or
+   - `https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/az-104-module-4`
+   - `https://learn.microsoft.com/en-us/shows/on-demand-instructor-led-training-series/az-104-module-6`
+
+2. Paste them into the “Smart URL Generation” fields in the app and specify how many videos you want to generate.
+
+3. The generator will automatically detect which number should be incremented and preserve leading zeros if present.
+
+> **Tip:**  
+> You can use any two samples from the sequence (e.g. 4 and 6, or 01 and 03) — they do not have to be consecutive.
+
+#### **Examples:**
+- For samples `...ai-900-02-fy25` and `...ai-900-04-fy25` with count 5, the output will be:
+```
+...ai-900-01-fy25
+...ai-900-02-fy25
+...ai-900-03-fy25
+...ai-900-04-fy25
+...ai-900-05-fy25
+```
+
+`
+- For samples `...module-4` and `...module-6` with count 3, the output will be:
+```
+...module-1
+...module-2
+...module-3
+```
+> If your course uses links with leading zeros, the generator will keep them; if not, the output will use plain numbers.
+---
 ## Requirements
 
 - Python 3.x
