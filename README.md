@@ -5,24 +5,48 @@
 ![GUI Interface](screenshots/manual.png)
 ![URL Generator](screenshots/url_generator.png)
 ![Links From File](screenshots/from_file.png)
-
+---
 ## Features
 
+- **Smart Video Quality Fallback**: Automatically downloads the best available quality (high → medium → low)
+- **Granular Content Selection**: Choose exactly what to download (Video, Audio, Subtitles) through the GUI
 - Download videos in high, medium, or low quality
-- Download audio files
+- Download audio files independently
 - Download subtitles in specified languages
 - Configurable download directory through environment variables
 - User-friendly GUI interface with:
   - Manual URL list input
   - Smart URL sequence generation from two sample URLs
   - File upload for batch processing
+  - Content type selection (Video, Audio, Subtitles)
 - Command-line interface for automation
 
+## Smart Video Quality Fallback
+
+The system automatically selects the best available video quality:
+
+1. **If high quality is available** → downloads high quality only
+2. **If high quality unavailable but medium available** → automatically falls back to medium quality
+3. **If only low quality available** → falls back to low quality
+4. **Downloads only ONE video file per entry** (the best available quality)
+
+This ensures you always get the best possible video quality without manual intervention, while avoiding duplicate downloads.
+
+## Content Type Selection
+
+The GUI now allows granular control over what content to download:
+
+- **Video**: Downloads the best available video quality with automatic fallback
+- **Audio**: Downloads audio track independently 
+- **Subtitles**: Downloads captions in selected languages
+
+You can choose any combination (e.g., only audio + subtitles, or only video, etc.).
+---
 ## Important
 
 - Downloads videos and audio files in their original quality without re-encoding
 - By default, files are saved in the `downloads` directory within the project folder
-
+---
 ## Requirements
 
 - Python 3.x
@@ -30,7 +54,7 @@
 - BeautifulSoup library
 - python-dotenv library
 - Gradio library (for GUI)
-
+---
 ## Installation
 
 1. Clone the repository:
@@ -49,7 +73,7 @@ cd LearnVideoDownloader
 ```bash
 pip install requests beautifulsoup4 tqdm python-dotenv gradio
 ```
-
+---
 ## Configuration
 
 You can configure the download directory by setting the `DOWNLOAD_DIR` environment variable. There are two ways to do this:
@@ -69,7 +93,7 @@ set DOWNLOAD_DIR=C:\path\to\your\download\directory
 ```
 
 If no download directory is specified, files will be saved in the `downloads` directory within the project folder.
-
+---
 ## Usage
 
 ### GUI Interface
@@ -83,6 +107,19 @@ The GUI provides three ways to download content:
 1. **Manual URL List**: Enter multiple URLs (one per line)
 2. **Generate from Base URL**: Enter two sample URLs (e.g., module-4 and module-5) and the tool will generate a sequence starting from module-1
 3. **Upload File**: Upload a text file containing URLs (one per line)
+
+#### Content Selection
+
+For each method, you can choose what to download:
+
+- **Video**: Enables smart quality fallback (high → medium → low)
+- **Audio**: Downloads audio tracks
+- **Subtitles**: Downloads captions in selected languages
+
+**Example scenarios:**
+- Select **Video + Audio + Subtitles**: Downloads best video quality + audio + captions
+- Select **Audio + Subtitles only**: Downloads audio and captions, skips video
+- Select **Video only**: Downloads best available video quality only
 
 ### Command Line Interface
 
