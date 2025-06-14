@@ -20,7 +20,40 @@
   - File upload for batch processing
   - Content type selection (Video, Audio, Subtitles)
 - Command-line interface for automation
+---
+## 🎯 Why LearnVideoDownloader?
 
+Unlike generic tools like `yt-dlp`, which require manual extraction of streaming manifests (`.m3u8` or `.mpd`) using browser developer tools, **LearnVideoDownloader** is purpose-built for Microsoft Learn:
+
+-   🔗 **Paste a Microsoft Learn URL — and it just works**  
+    No need to inspect network requests or parse manifests.
+    
+-   🧠 **Understands Microsoft Learn structure**  
+    Detects video, audio, and subtitle links automatically.
+    
+-   📋 **Batch downloads entire course modules**  
+    Generate and process full module series with just two sample links.
+    
+-   🖼️ **User-friendly GUI and CLI support**  
+    Ideal for both non-technical users and advanced scripting workflows.
+    
+-   🧾 **Supports subtitles in multiple languages**  
+    Download `.vtt` files in selected locales like `en-us`, `ru-ru`, etc.
+    
+
+> 🆚 **In contrast**, using `yt-dlp` often involves:
+> 
+> -   Opening DevTools in browser
+>     
+> -   Finding and copying manifest URLs
+>     
+> -   Constructing download commands manually
+>     
+> -   Troubleshooting formats and parameters
+>     
+
+**LearnVideoDownloader saves time and frustration by automating all of this.**
+---
 ## Smart Video Quality Fallback
 
 The system automatically selects the best available video quality:
